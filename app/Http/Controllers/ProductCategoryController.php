@@ -72,7 +72,7 @@ class ProductCategoryController extends Controller
         
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
+                'name' => 'required|string|max:255',
                 'image' => 'required|image',
             ]);
             if ($validator->fails()) {
@@ -179,7 +179,7 @@ class ProductCategoryController extends Controller
 
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
+                'name' => 'required|string|max:255',
                 'image' => 'image',
             ]);
             

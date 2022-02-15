@@ -7,13 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int    id
- * @property int    category_id
- * @property int    sub_category_id
+ * @property int 	parent_id
  * @property string name
- * @property string description
  * @property string image
  */
-class Product extends Model
+class ProductSubCategory extends Model
 {
     use HasFactory;
 
@@ -23,17 +21,16 @@ class Product extends Model
      * @var string[]
      */
     protected $fillable = [
-        'category_id', 'name', 'description', 'image', 'sub_category_id'
+        'name', 'image', 'parent_id'
     ];
-	
+
 	/**
-	 * Get the category that owns the Product
+	 * Get the productCategory that owns the ProductSubCategory
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */	
-	public function category(): BelongsTo
+	 */
+	public function productCategory(): BelongsTo
 	{
-		return $this->belongsTo(ProductCategory::class, 'category_id');
+		return $this->belongsTo(ProductCategory::class, 'parent_id');
 	}
-
 }

@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Banner;
+use App\Models\ProductCategory;
+use App\Models\ProductSubCategory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class BannerController extends Controller
+class ProductSubCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,16 +24,16 @@ class BannerController extends Controller
         $responseData['errors'] = [];
         
         try {
-            $banner = Banner::latest()->select('id', 'title', 'description', 'image')->get();
+            $subCategory = ProductSubCategory::latest()->select('id', 'name', 'image')->get();
             
-            if (count($banner) > 0) {
+            if (count($subCategory) > 0) {
                 $responseData['status'] = 200;
-                $responseData['message'] = 'Banner list get successful.';
-                $responseData['data'] = $banner;
+                $responseData['message'] = 'Product Sub Categories list get successfully.';
+                $responseData['data'] = $subCategory;
             } else {
                 $responseData['status'] = 200;
-                $responseData['message'] = 'No banner found.';
-                $responseData['data'] = $banner;
+                $responseData['message'] = 'No Product Sub Categories found.';
+                $responseData['data'] = $subCategory;
             }
                 
             return $this->commonResponse($responseData, 200);
@@ -40,7 +41,7 @@ class BannerController extends Controller
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
-            Log::emergency('Banner controller index Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::emergency('Product Sub Category controller index Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             
             return $this->commonResponse($responseData, $code);
         }
@@ -60,7 +61,7 @@ class BannerController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse $responseData
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -72,9 +73,9 @@ class BannerController extends Controller
         
         try {
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'image' => 'required|image',
+                'name' => 'required|string|max:255',
+				'parent_id' => 'required|integer',
+                'image' => 'image',
             ]);
             if ($validator->fails()) {
                 $responseData['status'] = 200;
@@ -82,28 +83,28 @@ class BannerController extends Controller
                 return $this->commonResponse($responseData, 400);
             }
 
-            //create new instance of banner db
-            $banner = new Banner();
-            $banner->title = $request->title;
-            $banner->description = $request->description;
+            //Create new instance of Product Category db
+            $productSubCategory = new ProductSubCategory();
+            $productSubCategory->parent_id = $request->parent_id;
+            $productSubCategory->name = $request->name;
 
-            $destinationPath = public_path(config('constants.banner_url'));
+            $destinationPath = public_path(config('constants.productSubCategory_url'));
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $fileName = 'Banner-Img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
+                $fileName = 'product-sub-category-img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
                 $image->move($destinationPath, $fileName);
-                $banner->image = $fileName;
+                $productSubCategory->image = $fileName;
             }
-            $banner->save();
+            $productSubCategory->save();
 
             $responseData['status'] = 200;
-            $responseData['message'] = 'Banner store successfully.';
-            $responseData['data'] = $banner;
+            $responseData['message'] = 'Product Sub Category store successfully.';
+            $responseData['data'] = $productSubCategory;
 
             return $this->commonResponse($responseData, 200);
         } catch (\Exception $e) {
-            Log::info('Banner store exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::info('Product Sub Category store exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
@@ -115,33 +116,40 @@ class BannerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\ProductSubCategory  $productSubCategory
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-		
+		// dd($productSubCategory);
         $responseData = array();
         $responseData['status'] = 0;
         $responseData['message'] = '';
         $responseData['data'] = [];
+     
 		if (!$id) {
             $responseData['status'] = 406;
-            $responseData['message'] = 'Banner Id is required.';
+            $responseData['message'] = 'Product Category Id is required.';
             return $this->commonResponse($responseData, 406);
         }
-        try {
-            $bannerData = Banner::find($id);
+
+		try {
+            $productSubCategory = ProductSubCategory::find($id);
+
             $responseData['status'] = 200;
-            $responseData['message'] = 'Banner get successful.';
-            $responseData['data'] = $bannerData;
+			if(is_null($productSubCategory)) {
+				$responseData['message'] = 'No product sub category found.';
+			} else {
+				$responseData['message'] = 'Product Sub Category get successful.';
+			}
+            $responseData['data'] = $productSubCategory;
 
             return $this->commonResponse($responseData, 200);
         } catch (\Exception $e) {
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
-            Log::info('Banner controller show Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::info('Product Category controller show Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             return $this->commonResponse($responseData, $code);
         }
     }
@@ -149,10 +157,10 @@ class BannerController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\ProductSubCategory  $productSubCategory
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(ProductSubCategory $productSubCategory)
     {
         //
     }
@@ -161,12 +169,12 @@ class BannerController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,  $id)
     {
-        $responseData = array();
+		$responseData = array();
         $responseData['status'] = 0;
         $responseData['message'] = '';
         $responseData['data'] = [];
@@ -174,14 +182,14 @@ class BannerController extends Controller
         
         if (!$id) {
             $responseData['status'] = 406;
-            $responseData['message'] = 'Banner Id is required.';
+            $responseData['message'] = 'Product Sub Category Id is required.';
             return $this->commonResponse($responseData, 406);
         }
 
         try {
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
+                'name' => 'required|string|max:255',
+				'parent_id' => 'required|integer',
                 'image' => 'image',
             ]);
             
@@ -192,34 +200,34 @@ class BannerController extends Controller
                 return $this->commonResponse($responseData, 406);
             }
 
-            $bannerData = Banner::find($id);
+            $productSubCategory = ProductSubCategory::find($id);
 
             $fileName = null;
-            $destinationPath = public_path(config('constants.banner_url'));
+            $destinationPath = public_path(config('constants.productSubCategory_url'));
             if ($request->hasFile('image')) {
-                // remove already added image
-                if (file_exists($destinationPath.$bannerData->image)) {
-                    unlink($destinationPath.$bannerData->image);
+                // remove current image
+                if (file_exists($destinationPath.$productSubCategory->image)) {
+                    unlink($destinationPath.$productSubCategory->image);
                 }
 
                 $image = $request->file('image');
-                $fileName = 'banner-Img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
+                $fileName = 'product-sub-category-img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
                 $image->move($destinationPath, $fileName);
-                $bannerData->image = $fileName;
+                $productSubCategory->image = $fileName;
             }
-            $bannerData->title = $request->title;
-            $bannerData->description = $request->description;
-
-            $bannerData->update();
+            $productSubCategory->name = $request->name;
+			$productSubCategory->parent_id = $request->parent_id;
+            $productSubCategory->update();
+            
             $responseData['status'] = 200;
-            $responseData['message'] = 'Banner has been updated successfully';
+            $responseData['message'] = 'Product Sub Category has been updated successfully';
         
             return $this->commonResponse($responseData, 200);
         } catch (\Exception $e) {
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
-            Log::info('Banner controller update Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::info('Product Sub Category controller update Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             return $this->commonResponse($responseData, $code);
         }
     }
@@ -227,12 +235,12 @@ class BannerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-		$responseData = array();
+        $responseData = array();
         $responseData['status'] = 0;
         $responseData['message'] = '';
         $responseData['data'] = [];
@@ -240,30 +248,24 @@ class BannerController extends Controller
         
         if (!$id) {
             $responseData['status'] = 406;
-            $responseData['message'] = 'Banner Id is required.';
+            $responseData['message'] = 'Product Sub Category Id is required.';
             return $this->commonResponse($responseData, 406);
         }
 
 		try {
-            $bannerData = Banner::find($id);
-			if(!is_null($bannerData)) {
-				// delete banner image from storage
-				if (file_exists(public_path(config('constants.banner_url').$bannerData->image))) {
-					unlink(public_path(config('constants.banner_url').$bannerData->image));
-				}
-				$bannerData->delete();
-				$responseData['status'] = 200;
-				$responseData['message'] = 'Banner has been deleted successfully';
-			} else {
-				$responseData['message'] = 'No Banner Found.';
-				$responseData['status'] = 204;
-			}
-			
+            $productSubCategory = productSubCategory::find($id);
+            // delete productSubCategory image from storage
+            if (file_exists(public_path(config('constants.productSubCategory_url').$productSubCategory->image))) {
+                unlink(public_path(config('constants.productSubCategory_url').$productSubCategory->image));
+            }
+
+            $productSubCategory->delete();
+			$responseData['status'] = 200;
+			$responseData['message'] = 'Product Sub Category has been deleted successfully';
 
 			return $this->commonResponse($responseData, 200);
-
         } catch (\Exception $e) {
-            Log::info('delete banner catch an exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::info('delete Product Sub Category catch an exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
 
             return response()->json([
                 'status' => 500,
