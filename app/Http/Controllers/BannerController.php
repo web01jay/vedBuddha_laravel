@@ -47,16 +47,6 @@ class BannerController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -97,11 +87,11 @@ class BannerController extends Controller
             }
             $banner->save();
 
-            $responseData['status'] = 200;
+            $responseData['status'] = 201;
             $responseData['message'] = 'Banner store successfully.';
             $responseData['data'] = $banner;
 
-            return $this->commonResponse($responseData, 200);
+            return $this->commonResponse($responseData, 201);
         } catch (\Exception $e) {
             Log::info('Banner store exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             $responseData['status'] = 500;
@@ -120,7 +110,6 @@ class BannerController extends Controller
      */
     public function show($id)
     {
-		
         $responseData = array();
         $responseData['status'] = 0;
         $responseData['message'] = '';
@@ -144,17 +133,6 @@ class BannerController extends Controller
             Log::info('Banner controller show Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             return $this->commonResponse($responseData, $code);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**

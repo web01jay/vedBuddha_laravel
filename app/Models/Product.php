@@ -36,4 +36,14 @@ class Product extends Model
 		return $this->belongsTo(ProductCategory::class, 'category_id');
 	}
 
+	/**
+	 * Get the subCategory that owns the Product
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function subCategory(): BelongsTo
+	{
+		return $this->belongsTo(ProductSubCategory::class, 'sub_category_id');
+	}
+
 }

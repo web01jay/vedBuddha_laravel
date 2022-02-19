@@ -13,9 +13,10 @@ class ProductSubCategoryController extends Controller
     /**
      * Display a listing of the resource.
      *
+	 * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $responseData = array();
         $responseData['status'] = 0;
@@ -24,7 +25,11 @@ class ProductSubCategoryController extends Controller
         $responseData['errors'] = [];
         
         try {
-            $subCategory = ProductSubCategory::latest()->select('id', 'name', 'image')->get();
+			if($request->parentId > 0) {
+				$subCategory = ProductSubCategory::where('parent_id', $request->parentId)->latest()->select('id', 'name', 'image')->get();
+			} else {
+				$subCategory = ProductSubCategory::latest()->select('id', 'name', 'image')->get();
+			}
             
             if (count($subCategory) > 0) {
                 $responseData['status'] = 200;
@@ -43,18 +48,8 @@ class ProductSubCategoryController extends Controller
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
             Log::emergency('Product Sub Category controller index Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             
-            return $this->commonResponse($responseData, $code);
+            return $this->commonResponse($responseData, 500);
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -152,17 +147,6 @@ class ProductSubCategoryController extends Controller
             Log::info('Product Category controller show Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             return $this->commonResponse($responseData, $code);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\ProductSubCategory  $productSubCategory
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(ProductSubCategory $productSubCategory)
-    {
-        //
     }
 
     /**

@@ -47,16 +47,6 @@ class ProductCategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -209,7 +199,7 @@ class ProductCategoryController extends Controller
             
             $productCategory->update();
             $responseData['status'] = 200;
-            $responseData['message'] = 'Product Category has been updated successfully';
+            $responseData['message'] = 'Product Category has been updated successfully.';
         
             return $this->commonResponse($responseData, 200);
         } catch (\Exception $e) {

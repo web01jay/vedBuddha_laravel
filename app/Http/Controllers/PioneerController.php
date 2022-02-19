@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\Pioneer;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class ProductController extends Controller
+class PioneerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,16 +23,16 @@ class ProductController extends Controller
         $responseData['errors'] = [];
         
         try {
-            $products = Product::latest()->select('id', 'name', 'description', 'image', 'category_id', 'sub_category_id')->with(['category', 'subCategory'])->get();
+            $pioneer = Pioneer::latest()->select('id', 'name', 'description', 'image')->get();
             
-            if (count($products) > 0) {
+            if (count($pioneer) > 0) {
                 $responseData['status'] = 200;
-                $responseData['message'] = 'Product list get successfully.';
-                $responseData['data'] = $products;
+                $responseData['message'] = 'Pioneer list get successfully.';
+                $responseData['data'] = $pioneer;
             } else {
                 $responseData['status'] = 200;
-                $responseData['message'] = 'No Products found.';
-                $responseData['data'] = $products;
+                $responseData['message'] = 'No Pioneer found.';
+                $responseData['data'] = $pioneer;
             }
                 
             return $this->commonResponse($responseData, 200);
@@ -40,9 +40,9 @@ class ProductController extends Controller
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
-            Log::emergency('Product controller index Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::emergency('Pioneer controller index Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile(). ' Code :: '.$code);
             
-            return $this->commonResponse($responseData, $code);
+            return $this->commonResponse($responseData, 500);
         }
     }
 
@@ -63,8 +63,6 @@ class ProductController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'category_id' => 'required|integer',
-                'sub_category_id' => 'integer',
                 'description' => 'required|string',
                 'image' => 'required|image',
             ]);
@@ -74,30 +72,28 @@ class ProductController extends Controller
                 return $this->commonResponse($responseData, 400);
             }
 
-            //Create new instance of Product db
-            $products = new Product();
-            $products->name = $request->name;
-            $products->description = $request->description;
-            $products->category_id = $request->category_id;
-            $products->sub_category_id = $request->sub_category_id;
+            //create new instance of pioneer db
+            $pioneer = new Pioneer();
+            $pioneer->name = $request->name;
+            $pioneer->description = $request->description;
 
-            $destinationPath = public_path(config('constants.products'));
+            $destinationPath = public_path(config('constants.pioneer_url'));
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $fileName = 'product-img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
+                $fileName = 'pioneer-Img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
                 $image->move($destinationPath, $fileName);
-                $products->image = $fileName;
+                $pioneer->image = $fileName;
             }
-            $products->save();
+            $pioneer->save();
 
             $responseData['status'] = 201;
-            $responseData['message'] = 'Product store successfully.';
-            $responseData['data'] = $products;
+            $responseData['message'] = 'Pioneer store successfully.';
+            $responseData['data'] = $pioneer;
 
             return $this->commonResponse($responseData, 201);
         } catch (\Exception $e) {
-            Log::info('Product store exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::info('Pioneer store exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
@@ -118,25 +114,23 @@ class ProductController extends Controller
         $responseData['status'] = 0;
         $responseData['message'] = '';
         $responseData['data'] = [];
-     
 		if (!$id) {
             $responseData['status'] = 406;
-            $responseData['message'] = 'Product Id is required.';
+            $responseData['message'] = 'Pioneer Id is required.';
             return $this->commonResponse($responseData, 406);
         }
-
-		try {
-            $products = Product::find($id);
+        try {
+            $pioneerData = Pioneer::find($id);
             $responseData['status'] = 200;
-            $responseData['message'] = 'Product get successful.';
-            $responseData['data'] = $products;
+            $responseData['message'] = 'Pioneer get successful.';
+            $responseData['data'] = $pioneerData;
 
             return $this->commonResponse($responseData, 200);
         } catch (\Exception $e) {
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
-            Log::info('Product controller show Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::info('Pioneer controller show Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             return $this->commonResponse($responseData, $code);
         }
     }
@@ -156,53 +150,55 @@ class ProductController extends Controller
         $responseData['data'] = [];
         $responseData['errors'] = [];
         
+        if (!$id) {
+            $responseData['status'] = 406;
+            $responseData['message'] = 'Pioneer Id is required.';
+            return $this->commonResponse($responseData, 406);
+        }
+
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'category_id' => 'required|integer',
-                'sub_category_id' => 'integer',
                 'description' => 'required|string',
                 'image' => 'image',
             ]);
+            
             if ($validator->fails()) {
-                $responseData['status'] = 400;
+                $responseData['status'] = 406;
                 $responseData['errors'] = $validator->errors()->toArray();
-                return $this->commonResponse($responseData, 400);
+
+                return $this->commonResponse($responseData, 406);
             }
 
-            //Create new instance of Product db
-            $products = Product::find($id);
-            $products->name = $request->name;
-            $products->description = $request->description;
-            $products->category_id = $request->category_id;
-            $products->sub_category_id = $request->sub_category_id;
+            $pioneerData = Pioneer::find($id);
 
-            $destinationPath = public_path(config('constants.products'));
-
+            $fileName = null;
+            $destinationPath = public_path(config('constants.pioneer_url'));
             if ($request->hasFile('image')) {
-				if (file_exists($destinationPath.$productCategory->image)) {
-                    unlink($destinationPath.$productCategory->image);
+                // remove already added image
+                if (file_exists($destinationPath.$pioneerData->image)) {
+                    unlink($destinationPath.$pioneerData->image);
                 }
 
                 $image = $request->file('image');
-                $fileName = 'product-img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
+                $fileName = 'Pioneer-Img-'.date('YmdHsi').rand(10, 99).'.'.$image->getClientOriginalExtension();
                 $image->move($destinationPath, $fileName);
-                $products->image = $fileName;
+                $pioneerData->image = $fileName;
             }
-            $products->save();
+            $pioneerData->name = $request->name;
+            $pioneerData->description = $request->description;
 
+            $pioneerData->update();
             $responseData['status'] = 200;
-            $responseData['message'] = 'Product has been updated successfully.';
-            $responseData['data'] = $products;
-
+            $responseData['message'] = 'Pioneer has been updated successfully';
+        
             return $this->commonResponse($responseData, 200);
         } catch (\Exception $e) {
-            Log::info('Product update exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
             $code = ($e->getCode() != '') ? $e->getCode(): 500;
-
-            return $this->commonResponse($responseData, $code);
+            Log::info('Pioneer controller update Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            return $this->commonResponse($responseData, 500);
         }
     }
 
@@ -222,24 +218,30 @@ class ProductController extends Controller
         
         if (!$id) {
             $responseData['status'] = 406;
-            $responseData['message'] = 'Product Category Id is required.';
+            $responseData['message'] = 'Pioneer Id is required.';
             return $this->commonResponse($responseData, 406);
         }
 
 		try {
-            $products = Product::find($id);
-            // delete Product image from storage
-            if (file_exists(public_path(config('constants.products').$products->image))) {
-                unlink(public_path(config('constants.products').$products->image));
-            }
-
-            $products->delete();
-			$responseData['status'] = 200;
-			$responseData['message'] = 'Product has been deleted successfully';
+            $pioneerData = Pioneer::find($id);
+			if(!is_null($pioneerData)) {
+				// delete Pioneer image from storage
+				if (file_exists(public_path(config('constants.pioneer_url').$pioneerData->image))) {
+					unlink(public_path(config('constants.pioneer_url').$pioneerData->image));
+				}
+				$pioneerData->delete();
+				$responseData['status'] = 200;
+				$responseData['message'] = 'Pioneer has been deleted successfully';
+			} else {
+				$responseData['message'] = 'No Pioneer Found.';
+				$responseData['status'] = 200;
+			}
+			
 
 			return $this->commonResponse($responseData, 200);
+
         } catch (\Exception $e) {
-            Log::info('Delete Product catch an exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
+            Log::info('delete Pioneer catch an exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
 
             return response()->json([
                 'status' => 500,
