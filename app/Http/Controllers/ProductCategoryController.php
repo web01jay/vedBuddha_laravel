@@ -39,7 +39,7 @@ class ProductCategoryController extends Controller
         } catch (\Exception $e) {
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
-            $code = ($e->getCode() != '') ? $e->getCode(): 500;
+            $code = 500;
             Log::emergency('Product Category controller index Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             
             return $this->commonResponse($responseData, $code);
@@ -94,7 +94,7 @@ class ProductCategoryController extends Controller
             Log::info('Product Category store exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
-            $code = ($e->getCode() != '') ? $e->getCode(): 500;
+            $code = 500;
 
             return $this->commonResponse($responseData, $code);
         }
@@ -129,7 +129,7 @@ class ProductCategoryController extends Controller
         } catch (\Exception $e) {
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
-            $code = ($e->getCode() != '') ? $e->getCode(): 500;
+            $code = 500;
             Log::info('Product Category controller show Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             return $this->commonResponse($responseData, $code);
         }
@@ -205,7 +205,7 @@ class ProductCategoryController extends Controller
         } catch (\Exception $e) {
             $responseData['status'] = 500;
             $responseData['errors'] = $e->getMessage();
-            $code = ($e->getCode() != '') ? $e->getCode(): 500;
+            $code = 500;
             Log::info('Product Category controller update Exception:: Message:: '.$e->getMessage().' line:: '.$e->getLine().' Code:: '.$e->getCode().' file:: '.$e->getFile());
             return $this->commonResponse($responseData, $code);
         }
