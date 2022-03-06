@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string title
  * @property string description
  * @property string image
+ * @property string link
  */
 class Banner extends Model
 {
@@ -21,6 +22,6 @@ class Banner extends Model
      * @var string[]
      */
     protected $fillable = [
-        'title', 'description', 'image',
+        'title', 'description', 'image', 'link',
     ];
 }

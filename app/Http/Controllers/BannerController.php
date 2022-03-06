@@ -23,7 +23,7 @@ class BannerController extends Controller
         $responseData['errors'] = [];
         
         try {
-            $banner = Banner::latest()->select('id', 'title', 'description', 'image')->get();
+            $banner = Banner::latest()->select('id', 'title', 'description', 'image', 'link')->get();
             
             if (count($banner) > 0) {
                 $responseData['status'] = 200;
@@ -65,6 +65,7 @@ class BannerController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'image' => 'required|image',
+                'link' => 'string|max:255',
             ]);
             if ($validator->fails()) {
                 $responseData['status'] = 200;
@@ -76,6 +77,7 @@ class BannerController extends Controller
             $banner = new Banner();
             $banner->title = $request->title;
             $banner->description = $request->description;
+            $banner->link = $request->link;
 
             $destinationPath = public_path(config('constants.banner_url'));
 
@@ -161,6 +163,7 @@ class BannerController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'image' => 'image',
+				'link' => 'string|max:255',
             ]);
             
             if ($validator->fails()) {
@@ -187,6 +190,7 @@ class BannerController extends Controller
             }
             $bannerData->title = $request->title;
             $bannerData->description = $request->description;
+            $bannerData->link = $request->link;
 
             $bannerData->update();
             $responseData['status'] = 200;
