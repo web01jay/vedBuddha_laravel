@@ -26,22 +26,12 @@ class Product extends Model
         'category_id', 'name', 'description', 'image', 'sub_category_id'
     ];
 	
-	/**
-	 * Get the category that owns the Product
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */	
-	public function category(): BelongsTo
+	public function category()
 	{
 		return $this->belongsTo(ProductCategory::class, 'category_id');
 	}
 
-	/**
-	 * Get the subCategory that owns the Product
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function subCategory(): BelongsTo
+	public function subCategory()
 	{
 		return $this->belongsTo(ProductSubCategory::class, 'sub_category_id');
 	}

@@ -24,12 +24,7 @@ class ProductSubCategory extends Model
         'name', 'image', 'parent_id'
     ];
 
-	/**
-	 * Get the productCategory that owns the ProductSubCategory
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function productCategory(): BelongsTo
+	public function productCategory()
 	{
 		return $this->belongsTo(ProductCategory::class, 'parent_id');
 	}
