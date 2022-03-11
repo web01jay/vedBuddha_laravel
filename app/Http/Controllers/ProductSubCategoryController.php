@@ -190,7 +190,7 @@ class ProductSubCategoryController extends Controller
             $destinationPath = public_path(config('constants.productSubCategory_url'));
             if ($request->hasFile('image')) {
                 // remove current image
-                if (file_exists($destinationPath.$productSubCategory->image)) {
+                if ($productSubCategory->image != null && file_exists($destinationPath.$productSubCategory->image)) {
                     unlink($destinationPath.$productSubCategory->image);
                 }
 
@@ -239,7 +239,7 @@ class ProductSubCategoryController extends Controller
 		try {
             $productSubCategory = productSubCategory::find($id);
             // delete productSubCategory image from storage
-            if (file_exists(public_path(config('constants.productSubCategory_url').$productSubCategory->image))) {
+            if ($productSubCategory->image != null && file_exists(public_path(config('constants.productSubCategory_url').$productSubCategory->image))) {
                 unlink(public_path(config('constants.productSubCategory_url').$productSubCategory->image));
             }
 

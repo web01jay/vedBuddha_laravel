@@ -186,7 +186,7 @@ class ProductCategoryController extends Controller
             $destinationPath = public_path(config('constants.productCategory_url'));
             if ($request->hasFile('image')) {
                 // remove current image
-                if (file_exists($destinationPath.$productCategory->image)) {
+                if ($productCategory->image != null && file_exists($destinationPath.$productCategory->image)) {
                     unlink($destinationPath.$productCategory->image);
                 }
 
@@ -234,7 +234,7 @@ class ProductCategoryController extends Controller
 		try {
             $productCategoryData = ProductCategory::find($id);
             // delete productCategory image from storage
-            if (file_exists(public_path(config('constants.productCategory_url').$productCategoryData->image))) {
+            if ($productCategory->image != null && file_exists(public_path(config('constants.productCategory_url').$productCategoryData->image))) {
                 unlink(public_path(config('constants.productCategory_url').$productCategoryData->image));
             }
 

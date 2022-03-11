@@ -176,7 +176,7 @@ class PioneerController extends Controller
             $destinationPath = public_path(config('constants.pioneer_url'));
             if ($request->hasFile('image')) {
                 // remove already added image
-                if (file_exists($destinationPath.$pioneerData->image)) {
+                if ($pioneerData->image != null && file_exists($destinationPath.$pioneerData->image)) {
                     unlink($destinationPath.$pioneerData->image);
                 }
 
@@ -226,7 +226,7 @@ class PioneerController extends Controller
             $pioneerData = Pioneer::find($id);
 			if(!is_null($pioneerData)) {
 				// delete Pioneer image from storage
-				if (file_exists(public_path(config('constants.pioneer_url').$pioneerData->image))) {
+				if ($pioneerData->image != null && file_exists(public_path(config('constants.pioneer_url').$pioneerData->image))) {
 					unlink(public_path(config('constants.pioneer_url').$pioneerData->image));
 				}
 				$pioneerData->delete();

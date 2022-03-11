@@ -179,7 +179,7 @@ class BannerController extends Controller
             $destinationPath = public_path(config('constants.banner_url'));
             if ($request->hasFile('image')) {
                 // remove already added image
-                if (file_exists($destinationPath.$bannerData->image)) {
+				if ($bannerData->image != null && file_exists($destinationPath.$bannerData->image)) {
                     unlink($destinationPath.$bannerData->image);
                 }
 
@@ -230,7 +230,7 @@ class BannerController extends Controller
             $bannerData = Banner::find($id);
 			if(!is_null($bannerData)) {
 				// delete banner image from storage
-				if (file_exists(public_path(config('constants.banner_url').$bannerData->image))) {
+				if ($bannerData->image != null && file_exists(public_path(config('constants.banner_url').$bannerData->image))) {
 					unlink(public_path(config('constants.banner_url').$bannerData->image));
 				}
 				$bannerData->delete();
