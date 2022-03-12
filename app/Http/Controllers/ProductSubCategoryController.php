@@ -26,9 +26,9 @@ class ProductSubCategoryController extends Controller
         
         try {
 			if($request->parentId > 0) {
-				$subCategory = ProductSubCategory::where('parent_id', $request->parentId)->latest()->select('id', 'name', 'image')->get();
+				$subCategory = ProductSubCategory::where('parent_id', $request->parentId)->latest()->select('id', 'name', 'image', 'parent_id')->get();
 			} else {
-				$subCategory = ProductSubCategory::latest()->select('id', 'name', 'image')->get();
+				$subCategory = ProductSubCategory::latest()->select('id', 'name', 'image', 'parent_id')->get();
 			}
             
             if (count($subCategory) > 0) {

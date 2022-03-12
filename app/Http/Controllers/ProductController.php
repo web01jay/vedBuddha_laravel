@@ -126,7 +126,8 @@ class ProductController extends Controller
         }
 
 		try {
-            $products = Product::find($id);
+            $products = Product::where('id', $id)->select('id', 'name', 'description', 'image', 'category_id', 'sub_category_id')->with(['category', 'subCategory'])->get();
+			
             $responseData['status'] = 200;
             $responseData['message'] = 'Product get successful.';
             $responseData['data'] = $products;
