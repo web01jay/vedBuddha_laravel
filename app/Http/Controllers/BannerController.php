@@ -160,8 +160,8 @@ class BannerController extends Controller
 		Log::info("Banner update request:: ".json_encode($request->all()));
         try {
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
+                'title' => 'string|max:255',
+                'description' => 'string',
                 'image' => 'sometimes|image|max:10240',
 				'link' => 'string|max:255',
             ]);
