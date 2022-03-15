@@ -66,7 +66,7 @@ class ProductController extends Controller
                 'category_id' => 'required|integer',
                 'sub_category_id' => 'integer',
                 'description' => 'required|string',
-                'image' => 'required|image',
+                'image' => 'sometimes|image',
             ]);
             if ($validator->fails()) {
                 $responseData['status'] = 200;
@@ -163,7 +163,7 @@ class ProductController extends Controller
                 'category_id' => 'required|integer',
                 'sub_category_id' => 'integer',
                 'description' => 'required|string',
-                'image' => 'image',
+                'image' => 'sometimes|image',
             ]);
             if ($validator->fails()) {
                 $responseData['status'] = 400;
